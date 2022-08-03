@@ -5,6 +5,10 @@
     android:versionCode="100"
     android:versionName="100">
 
+    <!--
+        100- graphic represantation of phone stats
+    -->
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
