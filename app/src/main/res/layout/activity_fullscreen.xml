@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/fullscreenBackgroundColor"
+    android:theme="@style/ThemeOverlay.LiveControlProject.FullscreenContainer"
+    tools:context=".FullscreenActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+<!--    <TextView-->
+<!--        android:id="@+id/fullscreen_content"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="match_parent"-->
+<!--        android:gravity="center"-->
+<!--        android:keepScreenOn="true"-->
+<!--        android:text="@string/dummy_content"-->
+<!--        android:textColor="?attr/fullscreenTextColor"-->
+<!--        android:textSize="50sp"-->
+<!--        android:textStyle="bold" />-->
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="@style/Widget.Theme.LiveControlProject.ButtonBar.Fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+<!--            <Button-->
+<!--                android:id="@+id/dummy_button"-->
+<!--                style="?android:attr/buttonBarButtonStyle"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="@string/dummy_button" />-->
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/kit1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit1"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="20px"/>
+        <Button
+            android:id="@+id/kit2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit2"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="420px"
+            android:layout_marginTop="20px"/>
+
+        <Button
+            android:id="@+id/kit3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit3"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="750px"
+            android:layout_marginTop="20px"/>
+
+        <Button
+            android:id="@+id/kit4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit4"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1070px"
+            android:layout_marginTop="20px"/>
+
+        <Button
+            android:id="@+id/kit5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit5"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1400px"
+            android:layout_marginTop="20px"/>
+
+        <Button
+            android:id="@+id/wifirouter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/wifirouter"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1800px"
+            android:layout_marginTop="20px"/>
+
+        <Button
+            android:id="@+id/kit6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit6"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="100px"
+            android:layout_marginTop="450px"/>
+        <Button
+            android:id="@+id/kit7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit7"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="420px"
+            android:layout_marginTop="450px"/>
+
+        <Button
+            android:id="@+id/kit8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit8"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="750px"
+            android:layout_marginTop="450px"/>
+
+        <Button
+            android:id="@+id/kit9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit9"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1070px"
+            android:layout_marginTop="450px"/>
+
+        <Button
+            android:id="@+id/kit10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/kit10"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1400px"
+            android:layout_marginTop="450px"/>
+
+        <Button
+            android:id="@+id/encoder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/encoder"
+            android:textSize="50sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="1800px"
+            android:layout_marginTop="450px"/>
+
+            </FrameLayout>
+
+        </FrameLayout>

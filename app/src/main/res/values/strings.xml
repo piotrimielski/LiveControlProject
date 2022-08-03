@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">LiveControlProject</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="kit1">1</string>
+    <string name="kit2">2</string>
+    <string name="kit3">3</string>
+    <string name="kit4">4</string>
+    <string name="kit5">5</string>
+    <string name="kit6">6</string>
+    <string name="kit7">7</string>
+    <string name="kit8">8</string>
+    <string name="kit9">9</string>
+    <string name="kit10">10</string>
+    <string name="wifirouter">R</string>
+    <string name="encoder">E</string>
+</resources>
