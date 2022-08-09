@@ -113,7 +113,7 @@ public class FullscreenActivity extends AppCompatActivity {
                     pingOKCode(pojo);
                 }else if(pojo.getAction().equals(Constants.ACTION_ERROR) &&
                         pojo.getType().equals(Constants.ACTION_TYPE_PING)){
-                    pingCode(pojo);
+                    pingErrorCode(pojo);
                 }else if(pojo.getAction().equals(Constants.ACTION_ERROR)){
                     errorCode(pojo);
                 }else if(pojo.getMessage().equals(Constants.MSG_SIGNAL_QUALITY_OK)){
@@ -375,43 +375,43 @@ public class FullscreenActivity extends AppCompatActivity {
     private void errorCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
             binding.kit1.setBackgroundColor(Color.RED);
-            isConnected0=false;
+//            isConnected0=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.11")){
             binding.kit2.setBackgroundColor(Color.RED);
-            isConnected1=false;
+//            isConnected1=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.12")){
             binding.kit3.setBackgroundColor(Color.RED);
-            isConnected2=false;
+//            isConnected2=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.13")){
             binding.kit4.setBackgroundColor(Color.RED);
-            isConnected3=false;
+//            isConnected3=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.14")){
             binding.kit5.setBackgroundColor(Color.RED);
-            isConnected4=false;
+//            isConnected4=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.15")){
             binding.kit6.setBackgroundColor(Color.RED);
-            isConnected5=false;
+//            isConnected5=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.16")){
             binding.kit7.setBackgroundColor(Color.RED);
-            isConnected6=false;
+//            isConnected6=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.17")){
             binding.kit8.setBackgroundColor(Color.RED);
-            isConnected7=false;
+//            isConnected7=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.18")){
             binding.kit9.setBackgroundColor(Color.RED);
-            isConnected8=false;
+//            isConnected8=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.19")){
             binding.kit10.setBackgroundColor(Color.RED);
-            isConnected9=false;
+//            isConnected9=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.1")){
             binding.wifirouter.setBackgroundColor(Color.RED);
@@ -518,36 +518,45 @@ public class FullscreenActivity extends AppCompatActivity {
             binding.encoder.setBackgroundColor(Color.YELLOW);
         }
     }
-    private void pingCode(Pojo pojo) {
+    private void pingErrorCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
             binding.kit1.setBackgroundColor(Color.BLACK);
+            isConnected1=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.11")){
             binding.kit2.setBackgroundColor(Color.BLACK);
+            isConnected2=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.12")){
             binding.kit3.setBackgroundColor(Color.BLACK);
+            isConnected3=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.13")){
             binding.kit4.setBackgroundColor(Color.BLACK);
+            isConnected4=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.14")){
             binding.kit5.setBackgroundColor(Color.BLACK);
+            isConnected5=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.15")){
             binding.kit6.setBackgroundColor(Color.BLACK);
+            isConnected6=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.16")){
             binding.kit7.setBackgroundColor(Color.BLACK);
+            isConnected7=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.17")){
             binding.kit8.setBackgroundColor(Color.BLACK);
+            isConnected8=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.18")){
             binding.kit9.setBackgroundColor(Color.BLACK);
         }
         if(pojo.getIpAddress().equals("192.168.1.19")){
             binding.kit10.setBackgroundColor(Color.BLACK);
+            isConnected9=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.1")){
             binding.wifirouter.setBackgroundColor(Color.BLACK);

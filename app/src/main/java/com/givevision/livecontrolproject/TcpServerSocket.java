@@ -418,22 +418,21 @@ public class TcpServerSocket {
         Pojo pojo=new Pojo();
         java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
         if (execute_as_root(commands) == 0) {
-            LogManagement.Log_d(TAG, "executeCmde true");
-            pojo.setPojo(ipAddress,Constants.ACTION_OK, Constants.MSG_LOST_CONNECTION, Constants.ACTION_TYPE_PING,date );
+            LogManagement.Log_d(TAG, "executeCmde true for= "+ipAddress);
+            pojo.setPojo(ipAddress,Constants.ACTION_OK, Constants.MSG_NETWORK_CONNECTED, Constants.ACTION_TYPE_PING,date );
             Intent intent = new Intent();
             intent.setAction("com.givevision.livecontrolproject");
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
             intent.putExtra("pojo", pojo.toJSON());
             context.sendBroadcast(intent);
-            LogManagement.Log_e(TAG, "executeCmde false for= "+ipAddress);
         }else{
+            LogManagement.Log_e(TAG, "executeCmde false for= "+ipAddress);
             pojo.setPojo(ipAddress,Constants.ACTION_ERROR, Constants.MSG_LOST_CONNECTION, Constants.ACTION_TYPE_PING,date );
             Intent intent = new Intent();
             intent.setAction("com.givevision.livecontrolproject");
             intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
             intent.putExtra("pojo", pojo.toJSON());
             context.sendBroadcast(intent);
-            LogManagement.Log_e(TAG, "executeCmde false for= "+ipAddress);
         }
     }
 }
