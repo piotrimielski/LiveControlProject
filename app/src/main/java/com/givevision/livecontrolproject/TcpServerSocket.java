@@ -209,6 +209,50 @@ public class TcpServerSocket {
         serverThread.interrupt();
     }
 
+    public void checkKit(int i) {
+        String ipAddress="";
+        switch(i){
+            case 1:
+                ipAddress="192.168.1.11";
+                break;
+            case 2:
+                ipAddress="192.168.1.12";
+                break;
+            case 3:
+                ipAddress="192.168.1.13";
+                break;
+            case 4:
+                ipAddress="192.168.1.14";
+                break;
+            case 5:
+                ipAddress="192.168.1.15";
+                break;
+            case 6:
+                ipAddress="192.168.1.16";
+                break;
+            case 7:
+                ipAddress="192.168.1.17";
+                break;
+            case 8:
+                ipAddress="192.168.1.18";
+                break;
+            case 9:
+                ipAddress="192.168.1.19";
+                break;
+            default:
+                break;
+        }
+        LogManagement.Log_d(TAG, "checkKit kit= "+ipAddress);
+        Pojo pojo=new Pojo();
+        java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+        pojo.setPojo(ipAddress,Constants.ACTION_CHECK, Constants.MSG_CHECK_KIT, Constants.ACTION_TYPE_SOCKET,date );
+        Intent intent = new Intent();
+        intent.setAction("com.givevision.livecontrolproject");
+        intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        intent.putExtra("pojo", pojo.toJSON());
+        context.sendBroadcast(intent);
+    }
+
     class ServerThread implements Runnable {
         public void run() {
             socket = null;

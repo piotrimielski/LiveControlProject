@@ -3,57 +3,43 @@ package com.givevision.livecontrolproject;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.FragmentManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
-import android.content.pm.ActivityInfo;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.animation.AlphaAnimation;
 
 import com.givevision.livecontrolproject.databinding.ActivityFullscreenBinding;
 import com.givevision.livecontrolproject.log.Pojo;
-import com.givevision.livecontrolproject.methodes.wifi.WifiEvent;
 import com.givevision.livecontrolproject.util.Constants;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import org.json.JSONArray;
+import org.json.JSONException;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -78,14 +64,31 @@ public class FullscreenActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+    private ActivityFullscreenBinding binding;
     private final Handler mHideHandler = new Handler(Looper.myLooper());
     private View mContentView;
+    private View mControlsView;
+    private boolean mVisible;
+
+    private View mContent1View;
+    private View mContent2View;
+    private View mContent3View;
+    private View mContent4View;
+    private View mContent5View;
+    private View mContent6View;
+    private View mContent7View;
+    private View mContent8View;
+    private View mContent9View;
+    private View mContent10View;
+//    private final Handler mHideHandler1 = new Handler(Looper.myLooper());
+    private View mControlsKitView;
+    private boolean mKitVisible;
 
     private TcpServerService mService;
     private boolean mBound = false;
     public BroadcastReceiver tcpReceiver;
 
-    private boolean isConnected0;
+
     private boolean isConnected1;
     private boolean isConnected2;
     private boolean isConnected3;
@@ -95,6 +98,58 @@ public class FullscreenActivity extends AppCompatActivity {
     private boolean isConnected7;
     private boolean isConnected8;
     private boolean isConnected9;
+    private boolean isConnected10;
+
+    private List<StatusOfKit> statusKits=new ArrayList<>();
+    private AlphaAnimation buttonClick = new AlphaAnimation(1F, 0.8F);
+
+    public class StatusOfKit{
+        private String ipAddress;
+        private String state; // camera, video
+        private String rssi; // rssi dBm
+        private String battery;
+        private String temperature;
+
+        public String getIpAddress() {
+            return ipAddress;
+        }
+
+        public void setIpAddress(String ipAddress) {
+            this.ipAddress = ipAddress;
+        }
+
+        public String getState() {
+            return state;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+
+        public String getRssi() {
+            return rssi;
+        }
+
+        public void setRssi(String rssi) {
+            this.rssi = rssi;
+        }
+
+        public String getBattery() {
+            return battery;
+        }
+
+        public void setBattery(String battery) {
+            this.battery = battery;
+        }
+
+        public String getTemperature() {
+            return temperature;
+        }
+
+        public void setTemperature(String temperature) {
+            this.temperature = temperature;
+        }
+    }
 
     public class TcpReceiver extends BroadcastReceiver {
         public TcpReceiver() {
@@ -118,17 +173,25 @@ public class FullscreenActivity extends AppCompatActivity {
                     errorCode(pojo);
                 }else if(pojo.getMessage().equals(Constants.MSG_SIGNAL_QUALITY_OK)){
                     okCode(pojo);
-                }else if(pojo.getMessage().contains("ERROR")){
+                }else if(pojo.getMessage().contains("ERROR") ||
+                        pojo.getMessage().equals(Constants.MSG_SIGNAL_NOT_STRONG)){
                     warningCode(pojo);
+                }if(pojo.getMessage().contains(Constants.MSG_SIGNAL_RSSI)){
+                    rssiCode(pojo);
+                }else if(pojo.getAction().equals(Constants.ACTION_ON_APP)){
+                    if(pojo.getMessage().contains(Constants.MSG_SIGNAL_STATE)) {
+                        stateCode(pojo);
+                    }else if(pojo.getMessage().contains(Constants.MSG_SIGNAL_BATTERY)) {
+                        batteryCode(pojo);
+                    }else if(pojo.getMessage().contains(Constants.MSG_SIGNAL_TEMPERATURE)) {
+                        temperatureCode(pojo);
+                    }
                 }
             }else{
                 throw new UnsupportedOperationException("received wrong format value");
             }
         }
-
     }
-
-
 
     private void configureReceiver() {
         IntentFilter filter = new IntentFilter();
@@ -156,6 +219,28 @@ public class FullscreenActivity extends AppCompatActivity {
                         | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
             }
+            mControlsView.setVisibility(View.INVISIBLE);
+            final Window win = getWindow();
+            int ui = getWindow().getDecorView().getSystemUiVisibility();
+            win.getDecorView().setSystemUiVisibility(ui);
+            win.setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            win.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            win.addFlags(
+                    WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
+                            |WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+                            |WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+                            |WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                            |WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON
+            );
+
+        }
+    };
+
+    private final Runnable mHidePart2Runnable1 = new Runnable() {
+        @SuppressLint("InlinedApi")
+        @Override
+        public void run() {
+            mControlsKitView.setVisibility(View.INVISIBLE);
             final Window win = getWindow();
             int ui = getWindow().getDecorView().getSystemUiVisibility();
             win.getDecorView().setSystemUiVisibility(ui);
@@ -170,7 +255,8 @@ public class FullscreenActivity extends AppCompatActivity {
             );
         }
     };
-    private View mControlsView;
+
+
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -183,11 +269,31 @@ public class FullscreenActivity extends AppCompatActivity {
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
-    private boolean mVisible;
+
+    private final Runnable mShowPart2Runnable1 = new Runnable() {
+        @Override
+        public void run() {
+            // Delayed display of UI elements
+
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.show();
+            }
+            mControlsKitView.setVisibility(View.VISIBLE);
+        }
+    };
+
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
+        }
+    };
+
+    private final Runnable mHideRunnable1 = new Runnable() {
+        @Override
+        public void run() {
+            hideContent();
         }
     };
     /**
@@ -213,46 +319,224 @@ public class FullscreenActivity extends AppCompatActivity {
             return false;
         }
     };
-    private ActivityFullscreenBinding binding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LogManagement.Log_d(TAG, "onCreate started ");
-
         binding = ActivityFullscreenBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        for( int i=10;i<20; i++){
+            StatusOfKit statusOfKit=new StatusOfKit();
+            statusOfKit.setIpAddress("192.168.1."+i);
+            statusOfKit.setState("");
+            statusOfKit.setRssi("");
+            statusKits.add(statusOfKit);
+            LogManagement.Log_d(TAG, "onCreate add statusKits::"+
+                    " adrr="+statusKits.get(statusKits.size()-1).getIpAddress()+
+                    " state="+statusKits.get(statusKits.size()-1).getState()+
+                    " signal="+statusKits.get(statusKits.size()-1).getRssi());
+        }
+        LogManagement.Log_d(TAG, "onCreate statusKits::"+ " sizes="+statusKits.size());
+
+
         mVisible = true;
+        mKitVisible =true;
         mControlsView = binding.fullscreenContentControls;
-        mContentView = binding.kit1;
-        mContentView = binding.kit2;
-        mContentView = binding.kit3;
-        mContentView = binding.kit4;
-        mContentView = binding.kit5;
-        mContentView = binding.kit6;
-        mContentView = binding.kit7;
-        mContentView = binding.kit8;
-        mContentView = binding.kit9;
-        mContentView = binding.kit10;
-        mContentView = binding.wifirouter;
         mContentView = binding.encoder;
 
+        mContent1View = binding.kit1;
+        mContent2View = binding.kit2;
+        mContent3View = binding.kit3;
+        mContent4View = binding.kit4;
+        mContent5View = binding.kit5;
+        mContent6View = binding.kit6;
+        mContent7View = binding.kit7;
+        mContent8View = binding.kit8;
+        mContent9View = binding.kit9;
+        mContent10View = binding.kit10;
+        mControlsKitView = binding.contentKit;
+
         // Set up the user interaction to manually show or hide the system UI.
-//        mContentView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                toggle();
+        mContentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick restart ");
+                toggle();
+            }
+        });
+
+
+
+        mContent1View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 1 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(1);
+                }
+                showStatusKit("192.168.1.10");
+            }
+        });
+//        mContent1View.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                LogManagement.Log_d(TAG, "setOnTouchListener 1 ");
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN: {
+//                        v.getBackground().setColorFilter(0xe0f47521,PorterDuff.Mode.SRC_ATOP);
+//                        v.invalidate();
+//                        break;
+//                    }
+//                    case MotionEvent.ACTION_UP: {
+//                        v.getBackground().clearColorFilter();
+//                        v.invalidate();
+//                        break;
+//                    }
+//                }
+//                return false;
+//            }
+//        });
+
+        mContent2View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 2 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(2);
+                }
+                showStatusKit("192.168.1.11");
+            }
+        });
+
+        mContent3View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 3 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(3);
+                }
+                showStatusKit("192.168.1.12");
+            }
+        });
+
+        mContent4View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 4 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(4);
+                }
+                showStatusKit("192.168.1.13");
+            }
+        });
+
+        mContent5View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 5 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(5);
+                }
+                showStatusKit("192.168.1.14");
+            }
+        });
+
+        mContent6View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 6 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(6);
+                }
+                showStatusKit("192.168.1.15");
+            }
+        });
+
+        mContent7View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 7 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(7);
+                }
+                showStatusKit("192.168.1.16");
+            }
+        });
+
+        mContent8View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 8 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(8);
+                }
+                showStatusKit("192.168.1.17");
+            }
+        });
+
+        mContent9View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 9 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(9);
+                }
+                showStatusKit("192.168.1.18");
+            }
+        });
+
+        mContent10View.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick 10 ");
+                view.startAnimation(buttonClick);
+                if(mBound){
+                    mService.checkKit(10);
+                }
+                showStatusKit("192.168.1.19");
+            }
+        });
+//        mContent10View.setOnTouchListener(new View.OnTouchListener() {
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN: {
+//                        v.getBackground().setColorFilter(0xe0f47521,PorterDuff.Mode.SRC_ATOP);
+//                        v.invalidate();
+//                        break;
+//                    }
+//                    case MotionEvent.ACTION_UP: {
+//                        v.getBackground().clearColorFilter();
+//                        v.invalidate();
+//                        break;
+//                    }
+//                }
+//                return false;
 //            }
 //        });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-//        binding.dummyButton.setOnTouchListener(mDelayHideTouchListener);
+        binding.restartButton.setOnTouchListener(mDelayHideTouchListener);
 
         configureReceiver();
     }
+
+    private void showActionBtn(int kit) {
+//        sf
+    }
+
 
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
@@ -262,7 +546,7 @@ public class FullscreenActivity extends AppCompatActivity {
         // created, to briefly hint to the user that UI controls
         // are available.
         delayedHide(100);
-
+        delayedHide1(100);
     }
 
     @Override
@@ -277,15 +561,12 @@ public class FullscreenActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         LogManagement.Log_d(TAG, "onResume started ");
-
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         LogManagement.Log_d(TAG, "onPause started ");
-
     }
 
     @Override
@@ -308,10 +589,37 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
     private void toggle() {
+        LogManagement.Log_d(TAG, "toggle mVisible="+mVisible
+        + " mContentKitVisible="+mKitVisible);
+        if(mKitVisible){
+            hideContent();
+            mKitVisible=false;
+        }
         if (mVisible) {
             hide();
         } else {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS);
+            }
             show();
+        }
+    }
+
+    private void toggleContent(String kit, String state, String strength, String battery, String temperature) {
+        LogManagement.Log_d(TAG, "toggleContent mVisible="+mVisible
+                + " mContentKitVisible="+mKitVisible);
+
+        if(mVisible){
+            hide();
+            mVisible=false;
+        }
+        if (mKitVisible) {
+            hideContent();
+        } else {
+            if (AUTO_HIDE) {
+                delayedHide1(AUTO_HIDE_DELAY_MILLIS);
+            }
+            showContent(kit, state, strength, battery, temperature );
         }
     }
 
@@ -321,12 +629,24 @@ public class FullscreenActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+    }
+
+    private void hideContent() {
+        // Hide UI first
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+        mKitVisible = false;
+
+        // Schedule a runnable to remove the status and navigation bar after a delay
+        mHideHandler.removeCallbacks(mShowPart2Runnable1);
+        mHideHandler.postDelayed(mHidePart2Runnable1, UI_ANIMATION_DELAY);
     }
 
     private void show() {
@@ -340,9 +660,36 @@ public class FullscreenActivity extends AppCompatActivity {
         }
         mVisible = true;
 
+
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
+    }
+
+
+    private void showContent(String kit, String state, String strength, String battery, String temperature) {
+        // Show the system bar
+        if (Build.VERSION.SDK_INT >= 30) {
+            mControlsKitView.getWindowInsetsController().show(
+                    WindowInsets.Type.statusBars() | WindowInsets.Type.navigationBars());
+        } else {
+            mControlsKitView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+        mKitVisible = true;
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.show();
+        }
+        binding.kitContent.setText(kit);
+        binding.stateContent.setText(state);
+        binding.strengthContent.setText(strength);
+        binding.batteryContent.setText(battery);
+        binding.temperatureContent.setText(temperature);
+
+        // Schedule a runnable to display UI elements after a delay
+        mHideHandler.removeCallbacks(mHidePart2Runnable1);
+        mHideHandler.postDelayed(mShowPart2Runnable1, UI_ANIMATION_DELAY);
     }
 
     /**
@@ -352,6 +699,11 @@ public class FullscreenActivity extends AppCompatActivity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    private void delayedHide1(int delayMillis) {
+        mHideHandler.removeCallbacks(mHideRunnable1);
+        mHideHandler.postDelayed(mHideRunnable1, delayMillis);
     }
 
     /** Defines callbacks for service binding, passed to bindService() */
@@ -374,234 +726,436 @@ public class FullscreenActivity extends AppCompatActivity {
 
     private void errorCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
+            LogManagement.Log_e(TAG, "errorCode kit1");
             binding.kit1.setBackgroundColor(Color.RED);
-//            isConnected0=false;
+            isConnected1=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.11")){
+            LogManagement.Log_e(TAG, "errorCode kit2");
             binding.kit2.setBackgroundColor(Color.RED);
-//            isConnected1=false;
+            isConnected2=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.12")){
+            LogManagement.Log_e(TAG, "errorCode kit3");
             binding.kit3.setBackgroundColor(Color.RED);
-//            isConnected2=false;
+            isConnected3=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.13")){
+            LogManagement.Log_e(TAG, "errorCode kit4");
             binding.kit4.setBackgroundColor(Color.RED);
-//            isConnected3=false;
+            isConnected4=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.14")){
+            LogManagement.Log_e(TAG, "errorCode kit5");
             binding.kit5.setBackgroundColor(Color.RED);
-//            isConnected4=false;
+            isConnected5=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.15")){
+            LogManagement.Log_e(TAG, "errorCode kit6");
             binding.kit6.setBackgroundColor(Color.RED);
-//            isConnected5=false;
+            isConnected6=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.16")){
+            LogManagement.Log_e(TAG, "errorCode kit7");
             binding.kit7.setBackgroundColor(Color.RED);
-//            isConnected6=false;
+            isConnected7=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.17")){
+            LogManagement.Log_e(TAG, "errorCode kit8");
             binding.kit8.setBackgroundColor(Color.RED);
-//            isConnected7=false;
+            isConnected8=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.18")){
+            LogManagement.Log_e(TAG, "errorCode kit9");
             binding.kit9.setBackgroundColor(Color.RED);
-//            isConnected8=false;
+            isConnected9=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.19")){
+            LogManagement.Log_e(TAG, "errorCode kit10");
             binding.kit10.setBackgroundColor(Color.RED);
-//            isConnected9=false;
+            isConnected10=true;
         }
         if(pojo.getIpAddress().equals("192.168.1.1")){
+            LogManagement.Log_e(TAG, "errorCode router");
             binding.wifirouter.setBackgroundColor(Color.RED);
         }
         if(pojo.getIpAddress().equals("192.168.1.168")){
+            LogManagement.Log_e(TAG, "errorCode encoder");
             binding.encoder.setBackgroundColor(Color.RED);
         }
     }
 
     private void okCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
+            LogManagement.Log_d(TAG, "okCode kit1");
             binding.kit1.setBackgroundColor(Color.GREEN);
-            isConnected0=true;
-        }
-        if(pojo.getIpAddress().equals("192.168.1.11")){
-            binding.kit2.setBackgroundColor(Color.GREEN);
             isConnected1=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.12")){
-            binding.kit3.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.11")){
+            LogManagement.Log_d(TAG, "okCode kit2");
+            binding.kit2.setBackgroundColor(Color.GREEN);
             isConnected2=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.13")){
-            binding.kit4.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.12")){
+            LogManagement.Log_d(TAG, "okCode kit3");
+            binding.kit3.setBackgroundColor(Color.GREEN);
             isConnected3=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.14")){
-            binding.kit5.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.13")){
+            LogManagement.Log_d(TAG, "okCode kit4");
+            binding.kit4.setBackgroundColor(Color.GREEN);
             isConnected4=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.15")){
-            binding.kit6.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.14")){
+            LogManagement.Log_d(TAG, "okCode kit5");
+            binding.kit5.setBackgroundColor(Color.GREEN);
             isConnected5=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.16")){
-            binding.kit7.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.15")){
+            LogManagement.Log_d(TAG, "okCode kit6");
+            binding.kit6.setBackgroundColor(Color.GREEN);
             isConnected6=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.17")){
-            binding.kit8.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.16")){
+            LogManagement.Log_d(TAG, "okCode kit7");
+            binding.kit7.setBackgroundColor(Color.GREEN);
             isConnected7=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.18")){
-            binding.kit9.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.17")){
+            LogManagement.Log_d(TAG, "okCode kit8");
+            binding.kit8.setBackgroundColor(Color.GREEN);
             isConnected8=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.19")){
-            binding.kit10.setBackgroundColor(Color.GREEN);
+        if(pojo.getIpAddress().equals("192.168.1.18")){
+            LogManagement.Log_d(TAG, "okCode kit9");
+            binding.kit9.setBackgroundColor(Color.GREEN);
             isConnected9=true;
         }
+        if(pojo.getIpAddress().equals("192.168.1.19")){
+            LogManagement.Log_d(TAG, "okCode kit10");
+            binding.kit10.setBackgroundColor(Color.GREEN);
+            isConnected10=true;
+        }
         if(pojo.getIpAddress().equals("192.168.1.1")){
+            LogManagement.Log_d(TAG, "okCode router");
             binding.wifirouter.setBackgroundColor(Color.GREEN);
         }
         if(pojo.getIpAddress().equals("192.168.1.168")){
+            LogManagement.Log_d(TAG, "okCode encoder");
             binding.encoder.setBackgroundColor(Color.GREEN);
         }
     }
 
     private void warningCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
+            LogManagement.Log_d(TAG, "okCode kit1");
             binding.kit1.setBackgroundColor(Color.YELLOW);
-            isConnected0=true;
-        }
-        if(pojo.getIpAddress().equals("192.168.1.11")){
-            binding.kit2.setBackgroundColor(Color.YELLOW);
             isConnected1=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.12")){
-            binding.kit3.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.11")){
+            LogManagement.Log_d(TAG, "okCode kit2");
+            binding.kit2.setBackgroundColor(Color.YELLOW);
             isConnected2=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.13")){
-            binding.kit4.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.12")){
+            LogManagement.Log_d(TAG, "okCode kit3");
+            binding.kit3.setBackgroundColor(Color.YELLOW);
             isConnected3=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.14")){
-            binding.kit5.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.13")){
+            LogManagement.Log_d(TAG, "okCode kit4");
+            binding.kit4.setBackgroundColor(Color.YELLOW);
             isConnected4=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.15")){
-            binding.kit6.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.14")){
+            LogManagement.Log_d(TAG, "okCode kit5");
+            binding.kit5.setBackgroundColor(Color.YELLOW);
             isConnected5=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.16")){
-            binding.kit7.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.15")){
+            LogManagement.Log_d(TAG, "okCode kit6");
+            binding.kit6.setBackgroundColor(Color.YELLOW);
             isConnected6=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.17")){
-            binding.kit8.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.16")){
+            LogManagement.Log_d(TAG, "okCode kit7");
+            binding.kit7.setBackgroundColor(Color.YELLOW);
             isConnected7=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.18")){
-            binding.kit9.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.17")){
+            LogManagement.Log_d(TAG, "okCode kit8");
+            binding.kit8.setBackgroundColor(Color.YELLOW);
             isConnected8=true;
         }
-        if(pojo.getIpAddress().equals("192.168.1.19")){
-            binding.kit10.setBackgroundColor(Color.YELLOW);
+        if(pojo.getIpAddress().equals("192.168.1.18")){
+            LogManagement.Log_d(TAG, "okCode kit9");
+            binding.kit9.setBackgroundColor(Color.YELLOW);
             isConnected9=true;
         }
+        if(pojo.getIpAddress().equals("192.168.1.19")){
+            LogManagement.Log_d(TAG, "okCode kit10");
+            binding.kit10.setBackgroundColor(Color.YELLOW);
+            isConnected10=true;
+        }
         if(pojo.getIpAddress().equals("192.168.1.1")){
+            LogManagement.Log_d(TAG, "okCode router");
             binding.wifirouter.setBackgroundColor(Color.YELLOW);
         }
         if(pojo.getIpAddress().equals("192.168.1.168")){
+            LogManagement.Log_d(TAG, "okCode encoder");
             binding.encoder.setBackgroundColor(Color.YELLOW);
         }
     }
     private void pingErrorCode(Pojo pojo) {
         if(pojo.getIpAddress().equals("192.168.1.10")){
+            LogManagement.Log_d(TAG, "okCode kit1");
             binding.kit1.setBackgroundColor(Color.BLACK);
             isConnected1=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.11")){
+            LogManagement.Log_d(TAG, "okCode kit2");
             binding.kit2.setBackgroundColor(Color.BLACK);
             isConnected2=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.12")){
+            LogManagement.Log_d(TAG, "okCode kit3");
             binding.kit3.setBackgroundColor(Color.BLACK);
             isConnected3=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.13")){
+            LogManagement.Log_d(TAG, "okCode kit4");
             binding.kit4.setBackgroundColor(Color.BLACK);
             isConnected4=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.14")){
+            LogManagement.Log_d(TAG, "okCode kit5");
             binding.kit5.setBackgroundColor(Color.BLACK);
             isConnected5=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.15")){
+            LogManagement.Log_d(TAG, "okCode kit6");
             binding.kit6.setBackgroundColor(Color.BLACK);
             isConnected6=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.16")){
+            LogManagement.Log_d(TAG, "okCode kit7");
             binding.kit7.setBackgroundColor(Color.BLACK);
             isConnected7=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.17")){
+            LogManagement.Log_d(TAG, "okCode kit8");
             binding.kit8.setBackgroundColor(Color.BLACK);
             isConnected8=false;
         }
         if(pojo.getIpAddress().equals("192.168.1.18")){
+            LogManagement.Log_d(TAG, "okCode kit9");
             binding.kit9.setBackgroundColor(Color.BLACK);
-        }
-        if(pojo.getIpAddress().equals("192.168.1.19")){
-            binding.kit10.setBackgroundColor(Color.BLACK);
             isConnected9=false;
         }
+        if(pojo.getIpAddress().equals("192.168.1.19")){
+            LogManagement.Log_d(TAG, "okCode kit10");
+            binding.kit10.setBackgroundColor(Color.BLACK);
+            isConnected10=false;
+        }
         if(pojo.getIpAddress().equals("192.168.1.1")){
+            LogManagement.Log_d(TAG, "okCode router");
             binding.wifirouter.setBackgroundColor(Color.BLACK);
         }
         if(pojo.getIpAddress().equals("192.168.1.168")){
+            LogManagement.Log_d(TAG, "okCode encoder");
             binding.encoder.setBackgroundColor(Color.BLACK);
         }
     }
     private void pingOKCode(Pojo pojo) {
-        if(pojo.getIpAddress().equals("192.168.1.10") && !isConnected0){
+        if(pojo.getIpAddress().equals("192.168.1.10") && !isConnected1){
+            LogManagement.Log_d(TAG, "okCode kit1");
             binding.kit1.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.11") && !isConnected1){
+        if(pojo.getIpAddress().equals("192.168.1.11") && !isConnected2){
+            LogManagement.Log_d(TAG, "okCode kit2");
             binding.kit2.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.12") && !isConnected2){
+        if(pojo.getIpAddress().equals("192.168.1.12") && !isConnected3){
+            LogManagement.Log_d(TAG, "okCode kit3");
             binding.kit3.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.13") && !isConnected3){
+        if(pojo.getIpAddress().equals("192.168.1.13") && !isConnected4){
+            LogManagement.Log_d(TAG, "okCode kit4");
             binding.kit4.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.14") && !isConnected4){
+        if(pojo.getIpAddress().equals("192.168.1.14") && !isConnected5){
+            LogManagement.Log_d(TAG, "okCode kit5");
             binding.kit5.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.15") && !isConnected5){
+        if(pojo.getIpAddress().equals("192.168.1.15") && !isConnected6){
+            LogManagement.Log_d(TAG, "okCode kit6");
             binding.kit6.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.16") && !isConnected6){
+        if(pojo.getIpAddress().equals("192.168.1.16") && !isConnected7){
+            LogManagement.Log_d(TAG, "okCode kit7");
             binding.kit7.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.17") && !isConnected7){
+        if(pojo.getIpAddress().equals("192.168.1.17") && !isConnected8){
+            LogManagement.Log_d(TAG, "okCode kit8");
             binding.kit8.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.18") && !isConnected8){
+        if(pojo.getIpAddress().equals("192.168.1.18") && !isConnected9){
+            LogManagement.Log_d(TAG, "okCode kit9");
             binding.kit9.setBackgroundColor(Color.CYAN);
         }
-        if(pojo.getIpAddress().equals("192.168.1.19") && !isConnected9){
+        if(pojo.getIpAddress().equals("192.168.1.19") && !isConnected10){
+            LogManagement.Log_d(TAG, "okCode kit10");
             binding.kit10.setBackgroundColor(Color.CYAN);
         }
         if(pojo.getIpAddress().equals("192.168.1.1")){
+            LogManagement.Log_d(TAG, "okCode router");
             binding.wifirouter.setBackgroundColor(Color.CYAN);
         }
         if(pojo.getIpAddress().equals("192.168.1.168")){
+            LogManagement.Log_d(TAG, "okCode encoder");
             binding.encoder.setBackgroundColor(Color.CYAN);
         }
+    }
+
+    private void stateCode(Pojo pojo) {
+        String state = "";
+        String[] parts = pojo.getMessage().split("=");
+        if(parts.length==2){
+            state= parts[1];
+        }
+        String ipAddr= pojo.getIpAddress();
+        for (int i=0; i<statusKits.size(); i++) {
+            if(statusKits.get(i).getIpAddress().equals(ipAddr)){
+                statusKits.get(i).setState(state);
+                LogManagement.Log_d(TAG, "stateCode statusKits::"+
+                        " adrr="+statusKits.get(i).getIpAddress()+
+                        " state="+statusKits.get(i).getState()+
+                        " signal="+statusKits.get(i).getRssi()+
+                        " battery="+statusKits.get(i).getBattery()+
+                        " temperature="+statusKits.get(i).getTemperature());
+                break;
+            }
+        }
+    }
+
+    private void temperatureCode(Pojo pojo) {
+        String temperature = "";
+        String[] parts = pojo.getMessage().split("=");
+        if(parts.length==2){
+            temperature= parts[1];
+        }
+        String ipAddr= pojo.getIpAddress();
+        for (int i=0; i<statusKits.size(); i++) {
+            if(statusKits.get(i).getIpAddress().equals(ipAddr)){
+                statusKits.get(i).setTemperature(temperature);
+                LogManagement.Log_d(TAG, "stateCode statusKits::"+
+                        " adrr="+statusKits.get(i).getIpAddress()+
+                        " state="+statusKits.get(i).getState()+
+                        " signal="+statusKits.get(i).getRssi()+
+                        " battery="+statusKits.get(i).getBattery()+
+                        " temperature="+statusKits.get(i).getTemperature());
+                break;
+            }
+        }
+    }
+
+    private void batteryCode(Pojo pojo) {
+        String battery = "";
+        String[] parts = pojo.getMessage().split("=");
+        if(parts.length==2){
+            battery= parts[1];
+        }
+        String ipAddr= pojo.getIpAddress();
+        for (int i=0; i<statusKits.size(); i++) {
+            if(statusKits.get(i).getIpAddress().equals(ipAddr)){
+                statusKits.get(i).setBattery(battery);
+                LogManagement.Log_d(TAG, "stateCode statusKits::"+
+                        " adrr="+statusKits.get(i).getIpAddress()+
+                        " state="+statusKits.get(i).getState()+
+                        " signal="+statusKits.get(i).getRssi()+
+                        " battery="+statusKits.get(i).getBattery()+
+                        " temperature="+statusKits.get(i).getTemperature());
+                break;
+            }
+        }
+    }
+
+    private void rssiCode(Pojo pojo) {
+        String[] parts = pojo.getMessage().split("=");
+        String strength="dBm";
+        if(parts.length==2){
+            strength= parts[1];
+        }
+        String ipAddr= pojo.getIpAddress();
+            for (int i=0; i<statusKits.size(); i++) {
+                if(statusKits.get(i).getIpAddress().equals(ipAddr)){
+                    statusKits.get(i).setRssi(strength);
+                    LogManagement.Log_d(TAG, "rssiCode statusKits::"+
+                            " adrr="+statusKits.get(i).getIpAddress()+
+                            " state="+statusKits.get(i).getState()+
+                            " signal="+statusKits.get(i).getRssi()+
+                            " battery="+statusKits.get(i).getBattery()+
+                            " temperature="+statusKits.get(i).getTemperature());
+                    break;
+                }
+            }
+    }
+
+    private void showStatusKit(String k) {
+        LogManagement.Log_d(TAG, "showStatus ipAdrr ="+k+" statusKits sizes="+statusKits.size());
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                String kit="";
+                String strength= "dBm";
+                String state="";
+                String battery="%";
+                String temperature="℃";
+                for (int i=0; i<statusKits.size(); i++) {
+                    String ipAddr= statusKits.get(i).getIpAddress();
+                    strength= statusKits.get(i).getRssi()+"dBm";
+                    state=statusKits.get(i).getState();
+                    battery=statusKits.get(i).getBattery()+"%";
+                    temperature=statusKits.get(i).getTemperature();
+                    if(ipAddr.equals("192.168.1.10") && ipAddr.equals(k)){
+                        kit="kit:1";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.11") && ipAddr.equals(k)) {
+                        kit = "kit:2";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.12") && ipAddr.equals(k)) {
+                        kit = "kit:3";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.13") && ipAddr.equals(k)) {
+                        kit = "kit:4";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.14") && ipAddr.equals(k)) {
+                        kit = "kit:5";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.15") && ipAddr.equals(k)) {
+                        kit = "kit:6";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.16") && ipAddr.equals(k)) {
+                        kit = "kit:7";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.17") && ipAddr.equals(k)) {
+                        kit = "kit:8";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.18") && ipAddr.equals(k)) {
+                        kit = "kit:9";
+                        break;
+                    }else if(ipAddr.equals("192.168.1.19") && ipAddr.equals(k)) {
+                        kit = "kit:10";
+                        break;
+                    }
+
+                }
+                mKitVisible=false;
+                LogManagement.Log_d(TAG, "showStatus kit ="+kit+" state="+state+" strength="+strength);
+                toggleContent(kit, state,strength , battery, temperature);
+            }
+        }, 500);
+
     }
 }
 

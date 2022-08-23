@@ -8,9 +8,17 @@ public final class Constants {
 	public static final String CONFIGURATION1_PATH = "GiveVision/givevision1.properties";
 	public static final String PREF_L_KEY = "locked";
 
+
+	public static final CharSequence MSG_SIGNAL_STATE = "status";
+	public static final CharSequence MSG_SIGNAL_BATTERY = "battery";
+	public static final CharSequence MSG_SIGNAL_TEMPERATURE ="temperature" ;
 	public static final String ACTION_TYPE_PING = "ping";
 	public static final String ACTION_TYPE_SOCKET = "socket";
 	public static final String ACTION_OK = "ping OK";
+	public static final String ACTION_CHECK = "check kit";
+	public static final String ACTION_ON_APP = "from app event";
+	public static final CharSequence MSG_SIGNAL_RSSI = "rssi";
+	public static final String MSG_CHECK_KIT = "check state of kit";
 	public static final String MSG_WIFI_DISABLED = "wifi disabled";
 	public static final String MSG_WIFI_ENABLED = "wifi enabled";
 	public static final String MSG_WIFI_CONNECTED="wifi connected";

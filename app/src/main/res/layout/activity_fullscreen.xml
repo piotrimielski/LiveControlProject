@@ -8,20 +8,6 @@
     android:theme="@style/ThemeOverlay.LiveControlProject.FullscreenContainer"
     tools:context=".FullscreenActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
-<!--    <TextView-->
-<!--        android:id="@+id/fullscreen_content"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:gravity="center"-->
-<!--        android:keepScreenOn="true"-->
-<!--        android:text="@string/dummy_content"-->
-<!--        android:textColor="?attr/fullscreenTextColor"-->
-<!--        android:textSize="50sp"-->
-<!--        android:textStyle="bold" />-->
-
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <FrameLayout
@@ -38,14 +24,83 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent">
 
-<!--            <Button-->
-<!--                android:id="@+id/dummy_button"-->
-<!--                style="?android:attr/buttonBarButtonStyle"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_weight="1"-->
-<!--                android:text="@string/dummy_button" />-->
+            <Button
+                android:id="@+id/restart_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor = "@color/white"
+                android:text="@string/restart_button" />
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/content_kit"
+            style="@style/Widget.Theme.LiveControlProject.ButtonBar.Fullscreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <TextView
+                android:id="@+id/kit_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:text="@string/kit_content"
+                android:textColor="?attr/fullscreenTextColor"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/state_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:text="@string/state_content"
+                android:textColor="?attr/fullscreenTextColor"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+            <TextView
+                android:id="@+id/strength_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:text="@string/strength_content"
+                android:textColor="?attr/fullscreenTextColor"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/battery_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:text="@string/strength_content"
+                android:textColor="?attr/fullscreenTextColor"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/temperature_content"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:keepScreenOn="true"
+                android:text="@string/strength_content"
+                android:textColor="?attr/fullscreenTextColor"
+                android:textSize="20sp"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <Button
@@ -165,7 +220,5 @@
             android:textStyle="bold"
             android:layout_marginLeft="1800px"
             android:layout_marginTop="450px"/>
-
-            </FrameLayout>
-
-        </FrameLayout>
+    </FrameLayout>
+</FrameLayout>

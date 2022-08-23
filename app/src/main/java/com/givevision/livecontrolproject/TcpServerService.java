@@ -9,7 +9,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import java.util.Calendar;
-
+//https://www.stechies.com/bound-service-example-android/
 public class TcpServerService extends Service {
     private static final String TAG = "TcpServerService";
 
@@ -70,16 +70,6 @@ public class TcpServerService extends Service {
 //		   Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }
 
-    public boolean check(String serv){
-        LogManagement.Log_d(TAG, "Service check");
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))  {
-            if (serv.equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Class used for the client Binder.  Because we know this service always
@@ -90,5 +80,21 @@ public class TcpServerService extends Service {
             // Return this instance of LocalService so clients can call public methods
             return TcpServerService.this;
         }
+    }
+
+    public boolean checkService(String serv){
+        LogManagement.Log_d(TAG, "Service check");
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE))  {
+            if (serv.equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void checkKit(int i){
+        LogManagement.Log_d(TAG, "Kit check");
+        serverSocket.checkKit(i);
     }
 }

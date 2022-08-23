@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">LiveControl</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="restart_button">Restart all player</string>
     <string name="kit1">1</string>
     <string name="kit2">2</string>
     <string name="kit3">3</string>
@@ -14,4 +13,8 @@
     <string name="kit10">10</string>
     <string name="wifirouter">R</string>
     <string name="encoder">E</string>
+    <string name="OK_button">OK</string>
+    <string name="state_content">state</string>
+    <string name="strength_content">strength</string>
+    <string name="kit_content">kit</string>
 </resources>
