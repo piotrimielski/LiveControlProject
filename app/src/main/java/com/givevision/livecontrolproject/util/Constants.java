@@ -16,7 +16,10 @@ public final class Constants {
 	public static final String ACTION_TYPE_SOCKET = "socket";
 	public static final String ACTION_OK = "ping OK";
 	public static final String ACTION_CHECK = "check kit";
+	public static final String ACTION_RESET = "reset player in the kit";
 	public static final String ACTION_ON_APP = "from app event";
+	public static final String ACTION_CAMERA="camera";
+	public static final String ACTION_VIDEO="video";
 	public static final CharSequence MSG_SIGNAL_RSSI = "rssi";
 	public static final String MSG_CHECK_KIT = "check state of kit";
 	public static final String MSG_WIFI_DISABLED = "wifi disabled";

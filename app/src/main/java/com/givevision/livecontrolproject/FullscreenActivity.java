@@ -69,7 +69,6 @@ public class FullscreenActivity extends AppCompatActivity {
     private View mContentView;
     private View mControlsView;
     private boolean mVisible;
-
     private View mContent1View;
     private View mContent2View;
     private View mContent3View;
@@ -105,7 +104,7 @@ public class FullscreenActivity extends AppCompatActivity {
 
     public class StatusOfKit{
         private String ipAddress;
-        private String state; // camera, video
+        private String state; // camera, video, reset
         private String rssi; // rssi dBm
         private String battery;
         private String temperature;
@@ -187,6 +186,7 @@ public class FullscreenActivity extends AppCompatActivity {
                         temperatureCode(pojo);
                     }
                 }
+                stateKits();
             }else{
                 throw new UnsupportedOperationException("received wrong format value");
             }
@@ -311,6 +311,8 @@ public class FullscreenActivity extends AppCompatActivity {
                     }
                     break;
                 case MotionEvent.ACTION_UP:
+                    LogManagement.Log_d(TAG, "mDelayHideTouchListener button tag="+view.getTag());
+                    buttonAction((String) view.getTag());
                     view.performClick();
                     break;
                 default:
@@ -319,6 +321,149 @@ public class FullscreenActivity extends AppCompatActivity {
             return false;
         }
     };
+
+    private void buttonAction(String tag) {
+        LogManagement.Log_d(TAG, "buttonAction kit="+tag+ " mBound="+mBound);
+        if(tag==null)
+            return;
+        if(tag.equals("all")){
+            if(mBound){
+                for (int i=0; i<statusKits.size(); i++) {
+                    String ipAddr= statusKits.get(i).getIpAddress();
+                    String state=statusKits.get(i).getState();
+                    if(state.equals(Constants.ACTION_VIDEO)){
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }
+                }
+            }
+        }else{
+            if(mBound){
+                for (int i=0; i<statusKits.size(); i++) {
+                    String ipAddr= statusKits.get(i).getIpAddress();
+                    String state=statusKits.get(i).getState();
+                    if(ipAddr.equals("192.168.1.10")&& tag.equals("1") && state.equals(Constants.ACTION_VIDEO)){
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.11")&& tag.equals("2") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.12")&& tag.equals("3") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.13")&& tag.equals("4") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.14")&& tag.equals("5") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.15")&& tag.equals("6") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.16")&& tag.equals("7") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.17")&& tag.equals("8") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.18")&& tag.equals("9") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.19")&& tag.equals("10") && state.equals(Constants.ACTION_VIDEO)) {
+                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        statusKits.get(i).setState(Constants.ACTION_RESET);
+                        stateKits();
+                        mService.resetKit(ipAddr);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
 
     @Override
@@ -346,7 +491,6 @@ public class FullscreenActivity extends AppCompatActivity {
         mKitVisible =true;
         mControlsView = binding.fullscreenContentControls;
         mContentView = binding.encoder;
-
         mContent1View = binding.kit1;
         mContent2View = binding.kit2;
         mContent3View = binding.kit3;
@@ -368,6 +512,14 @@ public class FullscreenActivity extends AppCompatActivity {
             }
         });
 
+        // Set up the user interaction to manually show or hide the system UI.
+        mContentView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LogManagement.Log_d(TAG, "setOnClickListener onClick restart ");
+                toggle();
+            }
+        });
 
 
         mContent1View.setOnClickListener(new View.OnClickListener() {
@@ -507,34 +659,13 @@ public class FullscreenActivity extends AppCompatActivity {
                 showStatusKit("192.168.1.19");
             }
         });
-//        mContent10View.setOnTouchListener(new View.OnTouchListener() {
-//            public boolean onTouch(View v, MotionEvent event) {
-//                switch (event.getAction()) {
-//                    case MotionEvent.ACTION_DOWN: {
-//                        v.getBackground().setColorFilter(0xe0f47521,PorterDuff.Mode.SRC_ATOP);
-//                        v.invalidate();
-//                        break;
-//                    }
-//                    case MotionEvent.ACTION_UP: {
-//                        v.getBackground().clearColorFilter();
-//                        v.invalidate();
-//                        break;
-//                    }
-//                }
-//                return false;
-//            }
-//        });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         binding.restartButton.setOnTouchListener(mDelayHideTouchListener);
-
+        binding.restartKitButton.setOnTouchListener(mDelayHideTouchListener);
         configureReceiver();
-    }
-
-    private void showActionBtn(int kit) {
-//        sf
     }
 
 
@@ -1090,15 +1221,141 @@ public class FullscreenActivity extends AppCompatActivity {
             for (int i=0; i<statusKits.size(); i++) {
                 if(statusKits.get(i).getIpAddress().equals(ipAddr)){
                     statusKits.get(i).setRssi(strength);
+
                     LogManagement.Log_d(TAG, "rssiCode statusKits::"+
                             " adrr="+statusKits.get(i).getIpAddress()+
                             " state="+statusKits.get(i).getState()+
                             " signal="+statusKits.get(i).getRssi()+
                             " battery="+statusKits.get(i).getBattery()+
                             " temperature="+statusKits.get(i).getTemperature());
+
+                    if(Integer.parseInt(strength)>=-60){
+                        okCode(pojo);
+                    }else{
+                        warningCode(pojo);
+                    }
+                    if(pojo.getIpAddress().equals("192.168.1.10")){
+                        isConnected1=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.11")){
+                        isConnected2=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.12")){
+                        isConnected3=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.13")){
+                        isConnected4=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.14")){
+                        isConnected5=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.15")){
+                        isConnected6=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.16")){
+                        isConnected7=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.17")){
+                        isConnected8=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.18")){
+                        isConnected9=true;
+                    }else if(pojo.getIpAddress().equals("192.168.1.19")){
+                        isConnected10=true;
+                    }
                     break;
                 }
             }
+    }
+
+    private void stateKits(){
+        for (int i=0; i<statusKits.size(); i++) {
+            String ipAddr= statusKits.get(i).getIpAddress();
+            String state=statusKits.get(i).getState();
+            if(ipAddr.equals("192.168.1.10")){
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit1.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit1.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit1.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.11")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit2.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit2.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit2.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.12")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit3.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit3.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit3.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.13")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit4.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit4.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit4.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.14")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit5.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit5.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit5.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.15")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit6.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit6.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit6.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.16")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit7.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit7.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit7.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.17")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit8.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit8.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit8.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.18")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit9.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit9.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit9.setTextColor(Color.WHITE);
+                }
+                break;
+            }else if(ipAddr.equals("192.168.1.19")) {
+                if(state.equals(Constants.ACTION_CAMERA)){
+                    binding.kit10.setTextColor(Color.YELLOW);
+                }else if(state.equals(Constants.ACTION_RESET)){
+                    binding.kit10.setTextColor(Color.BLACK);
+                }else{
+                    binding.kit10.setTextColor(Color.WHITE);
+                }
+                break;
+            }
+        }
     }
 
     private void showStatusKit(String k) {
@@ -1119,34 +1376,46 @@ public class FullscreenActivity extends AppCompatActivity {
                     temperature=statusKits.get(i).getTemperature();
                     if(ipAddr.equals("192.168.1.10") && ipAddr.equals(k)){
                         kit="kit:1";
+                        binding.restartKitButton.setTag("1");
                         break;
                     }else if(ipAddr.equals("192.168.1.11") && ipAddr.equals(k)) {
                         kit = "kit:2";
+                        binding.restartKitButton.setTag("2");
                         break;
                     }else if(ipAddr.equals("192.168.1.12") && ipAddr.equals(k)) {
                         kit = "kit:3";
+                        binding.restartKitButton.setTag("3");
                         break;
                     }else if(ipAddr.equals("192.168.1.13") && ipAddr.equals(k)) {
                         kit = "kit:4";
+                        binding.restartKitButton.setTag("4");
                         break;
                     }else if(ipAddr.equals("192.168.1.14") && ipAddr.equals(k)) {
                         kit = "kit:5";
+                        binding.restartKitButton.setTag("5");
                         break;
                     }else if(ipAddr.equals("192.168.1.15") && ipAddr.equals(k)) {
                         kit = "kit:6";
+                        binding.restartKitButton.setTag("6");
                         break;
                     }else if(ipAddr.equals("192.168.1.16") && ipAddr.equals(k)) {
                         kit = "kit:7";
+                        binding.restartKitButton.setTag("7");
                         break;
                     }else if(ipAddr.equals("192.168.1.17") && ipAddr.equals(k)) {
                         kit = "kit:8";
+                        binding.restartKitButton.setTag("8");
                         break;
                     }else if(ipAddr.equals("192.168.1.18") && ipAddr.equals(k)) {
                         kit = "kit:9";
+                        binding.restartKitButton.setTag("9");
                         break;
                     }else if(ipAddr.equals("192.168.1.19") && ipAddr.equals(k)) {
                         kit = "kit:10";
+                        binding.restartKitButton.setTag("10");
                         break;
+                    }else{
+                        binding.restartKitButton.setTag("0");
                     }
 
                 }

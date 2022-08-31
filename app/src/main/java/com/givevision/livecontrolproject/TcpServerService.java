@@ -7,6 +7,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Looper;
 
 import java.util.Calendar;
 //https://www.stechies.com/bound-service-example-android/
@@ -65,10 +66,11 @@ public class TcpServerService extends Service {
     public void onDestroy() {
         super.onDestroy();
         LogManagement.Log_d(TAG, "Service onDestroy");
-//        serverSocket.stop();
-//        Looper.myLooper().quitSafely();
+        serverSocket.stop();
+        Looper.myLooper().quitSafely();
 //		   Toast.makeText(this, "Service Destroyed", Toast.LENGTH_LONG).show();
     }
+
 
 
     /**
@@ -97,4 +99,10 @@ public class TcpServerService extends Service {
         LogManagement.Log_d(TAG, "Kit check");
         serverSocket.checkKit(i);
     }
+
+    public void resetKit(String ipAddr) {
+        LogManagement.Log_d(TAG, "Reset player in Kit");
+        serverSocket.resetKit(ipAddr);
+    }
+
 }

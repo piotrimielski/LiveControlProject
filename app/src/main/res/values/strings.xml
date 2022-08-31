@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">LiveControl</string>
     <string name="restart_button">Restart all player</string>
+    <string name="restart_kit_button">Restart player</string>
     <string name="kit1">1</string>
     <string name="kit2">2</string>
     <string name="kit3">3</string>
@@ -17,4 +18,5 @@
     <string name="state_content">state</string>
     <string name="strength_content">strength</string>
     <string name="kit_content">kit</string>
+
 </resources>

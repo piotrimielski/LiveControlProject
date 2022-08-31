@@ -50,7 +50,7 @@ public class TcpServerSocket {
     private java.net.ServerSocket serverSocket;
     private Handler updateConversationHandler;
     private Thread serverThread;
-    private List<Socket> sockets;
+    private List<Socket> sockets=new ArrayList<Socket>();
     private Socket socket;
     private WifiLogsRepository wifiLogsRepository;
     private Context context;
@@ -72,128 +72,7 @@ public class TcpServerSocket {
 
     public void start() {
         LogManagement.Log_d(TAG, "ServerThread start");
-        sockets=new List<Socket>() {
-            @Override
-            public int size() {
-                return 0;
-            }
 
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
-
-            @Override
-            public boolean contains(@Nullable Object o) {
-                return false;
-            }
-
-            @NonNull
-            @Override
-            public Iterator<Socket> iterator() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public Object[] toArray() {
-                return new Object[0];
-            }
-
-            @NonNull
-            @Override
-            public <T> T[] toArray(@NonNull T[] ts) {
-                return null;
-            }
-
-            @Override
-            public boolean add(Socket socket) {
-                return false;
-            }
-
-            @Override
-            public boolean remove(@Nullable Object o) {
-                return false;
-            }
-
-            @Override
-            public boolean containsAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(@NonNull Collection<? extends Socket> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean addAll(int i, @NonNull Collection<? extends Socket> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean removeAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public boolean retainAll(@NonNull Collection<?> collection) {
-                return false;
-            }
-
-            @Override
-            public void clear() {
-
-            }
-
-            @Override
-            public Socket get(int i) {
-                return null;
-            }
-
-            @Override
-            public Socket set(int i, Socket socket) {
-                return null;
-            }
-
-            @Override
-            public void add(int i, Socket socket) {
-
-            }
-
-            @Override
-            public Socket remove(int i) {
-                return null;
-            }
-
-            @Override
-            public int indexOf(@Nullable Object o) {
-                return 0;
-            }
-
-            @Override
-            public int lastIndexOf(@Nullable Object o) {
-                return 0;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<Socket> listIterator() {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public ListIterator<Socket> listIterator(int i) {
-                return null;
-            }
-
-            @NonNull
-            @Override
-            public List<Socket> subList(int i, int i1) {
-                return null;
-            }
-        };
         updateConversationHandler = new Handler();
         serverThread = new Thread(new ServerThread());
         serverThread.start();
@@ -253,6 +132,29 @@ public class TcpServerSocket {
         context.sendBroadcast(intent);
     }
 
+    public void resetKit(String ipAddress) {
+        LogManagement.Log_d(TAG, "resetKit kit= "+ipAddress+" sockets.size="+sockets.size());
+        for(int i=0; i<sockets.size();i++){
+            LogManagement.Log_d(TAG, "resetKit socket InetAddress= "+sockets.get(i).getInetAddress());
+            if(sockets.get(i).getInetAddress().toString().contains(ipAddress)){
+                Socket s=sockets.get(i);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try  {
+                            DataHandler dataHandler = new DataHandler();
+                            dataHandler.resetKit(s);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+                break;
+            }
+        }
+    }
+
     class ServerThread implements Runnable {
         public void run() {
             socket = null;
@@ -267,19 +169,30 @@ public class TcpServerSocket {
 //                    CommunicationThread commThread = new CommunicationThread(socket);
 //                    new Thread(commThread).start();
                     socket = serverSocket.accept();//
-                    LogManagement.Log_v(TAG, "ServerThread connection Established= "+socket.getInetAddress());
+                    LogManagement.Log_v(TAG, "ServerThread connection Established= "+socket.getInetAddress()+
+                            "  sockets.size="+sockets.size());
                     boolean isActive=false;
                     for(int i=0; i<sockets.size();i++){
-                        if(sockets.get(i).getInetAddress().equals(socket.getInetAddress())){
+                        LogManagement.Log_v(TAG, "ServerThread connection saved i="+i+
+                                sockets.get(i).getInetAddress());
+                        if(sockets.size()>0 && sockets.get(i).getInetAddress().equals(socket.getInetAddress())){
+                            sockets.get(i).close();
+//                            sockets.remove(i);
+                            sockets.set(i,socket);
                             isActive=true;
+                            break;
+                        }else{
+                            isActive=false;
                         }
-                        LogManagement.Log_v(TAG, "ServerThread connection saved= "+sockets.get(i));
                     }
+                    Reciever receiver=new Reciever(socket);
+                    receiver.start();
                     if(!isActive){
-                        Reciever receiver=new Reciever(socket);
-                        receiver.start();
                         sockets.add(socket);
                     }
+
+                    LogManagement.Log_v(TAG, "ServerThread connection added "+socket.getInetAddress()+
+                            " sockets.size=" +sockets.size());
                 } catch (IOException e) {
                     LogManagement.Log_e(TAG, "ServerThread IOException"+e);
                 }
@@ -299,16 +212,18 @@ public class TcpServerSocket {
         }
         public void run() {
             ArrayList<String> wifiMsg = new ArrayList<>();
+            LogManagement.Log_d(TAG, "Receiver rum : ");
             try {
                 input= new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 output=new PrintWriter(socket.getOutputStream());
                 Pojo pojo=new Pojo();
                 line=input.readLine();
-                while(!pojo.setPojo(line)&& !Thread.currentThread().isInterrupted()){
-                    LogManagement.Log_d(TAG, "while 1 input.ready()="+input.ready());
+                while(!socket.isClosed() && !pojo.setPojo(line)&& !Thread.currentThread().isInterrupted()){
+                    LogManagement.Log_d(TAG, "Receiver while 1 input.ready()="+input.ready()+
+                            line);
                     line=input.readLine();
                 }
-                while(!pojo.getAction().contains("QUIT") && !Thread.currentThread().isInterrupted()){
+                while(!socket.isClosed() && !pojo.getAction().contains("QUIT") && !Thread.currentThread().isInterrupted()){
                     output.println(line);
                     output.flush();
                     if(pojo.getAction().contains("syncDb")){
@@ -325,7 +240,7 @@ public class TcpServerSocket {
                             java.sql.Date sqlDate = new java.sql.Date(date.getTime());
 //                            wifiLogsRepository.insertWifiLogs(pojo.getMessage(),sqlDate);
                         } catch (ParseException e) {
-                            LogManagement.Log_e(TAG, "ParseException : "+e);
+                            LogManagement.Log_e(TAG, "Receiver ParseException : "+e);
                         }
                         Intent intent = new Intent();
                         intent.setAction("com.givevision.livecontrolproject");
@@ -334,35 +249,36 @@ public class TcpServerSocket {
                         context.sendBroadcast(intent);
                         line=input.readLine();
                         if(!pojo.setPojo(line)&& !Thread.currentThread().isInterrupted()){
-                            LogManagement.Log_d(TAG, "while 2 input.ready()="+input.ready());
+                            LogManagement.Log_d(TAG, "Receiver while 2 input.ready()="+input.ready());
                             break;
                         }
                     }
                 }
             } catch (IOException e) {
                 line=this.getName(); //reused String line for getting thread name
-                LogManagement.Log_e(TAG, "Reciever IO Error/ Client "+line+" terminated abruptly");
+                LogManagement.Log_e(TAG, "Receiver IO Error/ Client "+line+" terminated abruptly");
             }catch(NullPointerException e){
                 line=this.getName(); //reused String line for getting thread name
-                LogManagement.Log_e(TAG, "Reciever Client "+line+" Closed");
+                LogManagement.Log_e(TAG, "Receiver Client "+line+" Closed");
             }finally{
                 try{
-                    LogManagement.Log_d(TAG, "Connection Closing..");
+                    LogManagement.Log_d(TAG, "Receiver Connection Closing.. socket="+
+                            socket.getInetAddress());
                     sockets.remove(socket);
                     if (input!=null){
                         input.close();
-                        LogManagement.Log_d(TAG, "Reciever Input Closed");
+                        LogManagement.Log_d(TAG, "Receiver  Input Closed");
                     }
                     if(output!=null){
                         output.close();
-                        LogManagement.Log_d(TAG, "Reciever Output Closed");
+                        LogManagement.Log_d(TAG, "Receiver Output Closed");
                     }
                     if (socket!=null){
                         socket.close();
-                        LogManagement.Log_d(TAG, "Reciever Socket Closed");
+                        LogManagement.Log_d(TAG, "Receiver Socket Closed");
                     }
                 }catch(IOException ie){
-                    LogManagement.Log_e(TAG, "Reciever Socket Close Error");
+                    LogManagement.Log_e(TAG, "Receiver Socket Close Error");
                 }
                 Pojo pojo=new Pojo();
                 java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
@@ -386,7 +302,7 @@ public class TcpServerSocket {
             }
         }
         public void sendMessage(String message) {
-            LogManagement.Log_d(TAG, "Server: " + message + "\n");// Print the message on chat window.
+            LogManagement.Log_d(TAG, "Server: " + message + "\n");
             out.println(message); // Print the message on output stream.
             out.flush();
         }
@@ -398,6 +314,10 @@ public class TcpServerSocket {
             sender.sendMessage("***start***");
             sender.sendMessage("This is a message from the server");
             sender.sendMessage("***stop***");
+        }
+        public void resetKit(Socket s) {
+            Sender sender = new Sender(s);
+            sender.sendMessage(Constants.ACTION_RESET);
         }
     }
 

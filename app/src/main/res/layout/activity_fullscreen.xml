@@ -31,7 +31,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor = "@color/white"
-                android:text="@string/restart_button" />
+                android:text="@string/restart_button"
+                android:tag="all"/>
 
         </LinearLayout>
         <LinearLayout
@@ -101,6 +102,15 @@
                 android:textColor="?attr/fullscreenTextColor"
                 android:textSize="20sp"
                 android:textStyle="bold"/>
+            <Button
+                android:id="@+id/restart_kit_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textColor = "@color/white"
+                android:text="@string/restart_kit_button"
+                android:tag="0"/>
         </LinearLayout>
 
         <Button
