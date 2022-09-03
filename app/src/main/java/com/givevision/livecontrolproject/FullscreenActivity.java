@@ -108,6 +108,7 @@ public class FullscreenActivity extends AppCompatActivity {
         private String rssi; // rssi dBm
         private String battery;
         private String temperature;
+        private String mode;
 
         public String getIpAddress() {
             return ipAddress;
@@ -148,6 +149,14 @@ public class FullscreenActivity extends AppCompatActivity {
         public void setTemperature(String temperature) {
             this.temperature = temperature;
         }
+
+        public String getMode() {
+            return mode;
+        }
+
+        public void setMode(String mode) {
+            this.mode = mode;
+        }
     }
 
     public class TcpReceiver extends BroadcastReceiver {
@@ -178,11 +187,13 @@ public class FullscreenActivity extends AppCompatActivity {
                 }if(pojo.getMessage().contains(Constants.MSG_SIGNAL_RSSI)){
                     rssiCode(pojo);
                 }else if(pojo.getAction().equals(Constants.ACTION_ON_APP)){
-                    if(pojo.getMessage().contains(Constants.MSG_SIGNAL_STATE)) {
+                    if(pojo.getMessage().contains(Constants.MSG_STATE)) {
                         stateCode(pojo);
-                    }else if(pojo.getMessage().contains(Constants.MSG_SIGNAL_BATTERY)) {
+                    }else if(pojo.getMessage().contains(Constants.MSG_MODE)) {
+                        modeCode(pojo);
+                    }else if(pojo.getMessage().contains(Constants.MSG_BATTERY)) {
                         batteryCode(pojo);
-                    }else if(pojo.getMessage().contains(Constants.MSG_SIGNAL_TEMPERATURE)) {
+                    }else if(pojo.getMessage().contains(Constants.MSG_TEMPERATURE)) {
                         temperatureCode(pojo);
                     }
                 }
@@ -301,7 +312,7 @@ public class FullscreenActivity extends AppCompatActivity {
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener mDelayHideTouchResetListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             switch (motionEvent.getAction()) {
@@ -312,7 +323,7 @@ public class FullscreenActivity extends AppCompatActivity {
                     break;
                 case MotionEvent.ACTION_UP:
                     LogManagement.Log_d(TAG, "mDelayHideTouchListener button tag="+view.getTag());
-                    buttonAction((String) view.getTag());
+                    buttonReset((String) view.getTag());
                     view.performClick();
                     break;
                 default:
@@ -322,8 +333,34 @@ public class FullscreenActivity extends AppCompatActivity {
         }
     };
 
-    private void buttonAction(String tag) {
-        LogManagement.Log_d(TAG, "buttonAction kit="+tag+ " mBound="+mBound);
+    /**
+     * Touch listener to use for in-layout UI controls to delay hiding the
+     * system UI. This is to prevent the jarring behavior of controls going away
+     * while interacting with activity UI.
+     */
+    private final View.OnTouchListener mDelayHideTouchModeListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            switch (motionEvent.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (AUTO_HIDE) {
+                        delayedHide(AUTO_HIDE_DELAY_MILLIS);
+                    }
+                    break;
+                case MotionEvent.ACTION_UP:
+                    LogManagement.Log_d(TAG, "mDelayHideTouchListener button tag="+view.getTag());
+                    buttonMode((String) view.getTag());
+                    view.performClick();
+                    break;
+                default:
+                    break;
+            }
+            return false;
+        }
+    };
+
+    private void buttonReset(String tag) {
+        LogManagement.Log_d(TAG, "buttonReset kit="+tag+ " mBound="+mBound);
         if(tag==null)
             return;
         if(tag.equals("all")){
@@ -332,65 +369,10 @@ public class FullscreenActivity extends AppCompatActivity {
                     String ipAddr= statusKits.get(i).getIpAddress();
                     String state=statusKits.get(i).getState();
                     if(state.equals(Constants.ACTION_VIDEO)){
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
-                    }else if(state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
-                        statusKits.get(i).setState(Constants.ACTION_RESET);
-                        stateKits();
-                        mService.resetKit(ipAddr);
-                        break;
                     }
                 }
             }
@@ -400,61 +382,61 @@ public class FullscreenActivity extends AppCompatActivity {
                     String ipAddr= statusKits.get(i).getIpAddress();
                     String state=statusKits.get(i).getState();
                     if(ipAddr.equals("192.168.1.10")&& tag.equals("1") && state.equals(Constants.ACTION_VIDEO)){
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.11")&& tag.equals("2") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.12")&& tag.equals("3") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.13")&& tag.equals("4") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.14")&& tag.equals("5") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.15")&& tag.equals("6") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.16")&& tag.equals("7") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.17")&& tag.equals("8") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.18")&& tag.equals("9") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
                         break;
                     }else if(ipAddr.equals("192.168.1.19")&& tag.equals("10") && state.equals(Constants.ACTION_VIDEO)) {
-                        LogManagement.Log_d(TAG, "buttonAction resetKit="+ipAddr);
+                        LogManagement.Log_d(TAG, "buttonReset resetKit="+ipAddr);
                         statusKits.get(i).setState(Constants.ACTION_RESET);
                         stateKits();
                         mService.resetKit(ipAddr);
@@ -465,6 +447,93 @@ public class FullscreenActivity extends AppCompatActivity {
         }
     }
 
+    private void buttonMode(String tag) {
+        LogManagement.Log_d(TAG, "buttonMode kit="+tag+ " mBound="+mBound);
+        if(tag==null)
+            return;
+        if(tag.equals("all")){
+            if(mBound){
+                for (int i=0; i<statusKits.size(); i++) {
+                    String ipAddr= statusKits.get(i).getIpAddress();
+                    String state=statusKits.get(i).getState();
+                    if(state.equals(Constants.ACTION_VIDEO)){
+                        LogManagement.Log_d(TAG, "buttonMode resetKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                    }
+                }
+            }
+        }else{
+            if(mBound){
+                for (int i=0; i<statusKits.size(); i++) {
+                    String ipAddr= statusKits.get(i).getIpAddress();
+                    String state=statusKits.get(i).getState();
+                    if(ipAddr.equals("192.168.1.10")&& tag.equals("1")){
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.11")&& tag.equals("2")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.12")&& tag.equals("3")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.13")&& tag.equals("4")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.14")&& tag.equals("5")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.15")&& tag.equals("6")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.16")&& tag.equals("7")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.17")&& tag.equals("8")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.18")&& tag.equals("9")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }else if(ipAddr.equals("192.168.1.19")&& tag.equals("10")) {
+                        LogManagement.Log_d(TAG, "buttonMode modeKit="+ipAddr);
+                        statusKits.get(i).setMode(Constants.ACTION_MODE);
+                        stateKits();
+                        mService.modeKit(ipAddr);
+                        break;
+                    }
+                }
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -478,6 +547,7 @@ public class FullscreenActivity extends AppCompatActivity {
             statusOfKit.setIpAddress("192.168.1."+i);
             statusOfKit.setState("");
             statusOfKit.setRssi("");
+            statusOfKit.setMode("switch mode");
             statusKits.add(statusOfKit);
             LogManagement.Log_d(TAG, "onCreate add statusKits::"+
                     " adrr="+statusKits.get(statusKits.size()-1).getIpAddress()+
@@ -663,8 +733,10 @@ public class FullscreenActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        binding.restartButton.setOnTouchListener(mDelayHideTouchListener);
-        binding.restartKitButton.setOnTouchListener(mDelayHideTouchListener);
+        binding.restartButton.setOnTouchListener(mDelayHideTouchResetListener);
+        binding.restartKitButton.setOnTouchListener(mDelayHideTouchResetListener);
+        binding.modeButton.setOnTouchListener(mDelayHideTouchModeListener);
+        binding.modeKitButton.setOnTouchListener(mDelayHideTouchModeListener);
         configureReceiver();
     }
 
@@ -736,7 +808,7 @@ public class FullscreenActivity extends AppCompatActivity {
         }
     }
 
-    private void toggleContent(String kit, String state, String strength, String battery, String temperature) {
+    private void toggleContent(String kit, String state, String strength, String battery, String temperature, String mode) {
         LogManagement.Log_d(TAG, "toggleContent mVisible="+mVisible
                 + " mContentKitVisible="+mKitVisible);
 
@@ -750,7 +822,7 @@ public class FullscreenActivity extends AppCompatActivity {
             if (AUTO_HIDE) {
                 delayedHide1(AUTO_HIDE_DELAY_MILLIS);
             }
-            showContent(kit, state, strength, battery, temperature );
+            showContent(kit, state, strength, battery, temperature,mode );
         }
     }
 
@@ -798,7 +870,7 @@ public class FullscreenActivity extends AppCompatActivity {
     }
 
 
-    private void showContent(String kit, String state, String strength, String battery, String temperature) {
+    private void showContent(String kit, String state, String strength, String battery, String temperature, String mode) {
         // Show the system bar
         if (Build.VERSION.SDK_INT >= 30) {
             mControlsKitView.getWindowInsetsController().show(
@@ -817,7 +889,7 @@ public class FullscreenActivity extends AppCompatActivity {
         binding.strengthContent.setText(strength);
         binding.batteryContent.setText(battery);
         binding.temperatureContent.setText(temperature);
-
+        binding.modeKitButton.setText(mode);
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable1);
         mHideHandler.postDelayed(mShowPart2Runnable1, UI_ANIMATION_DELAY);
@@ -1161,6 +1233,29 @@ public class FullscreenActivity extends AppCompatActivity {
                 LogManagement.Log_d(TAG, "stateCode statusKits::"+
                         " adrr="+statusKits.get(i).getIpAddress()+
                         " state="+statusKits.get(i).getState()+
+                        " mode="+statusKits.get(i).getMode()+
+                        " signal="+statusKits.get(i).getRssi()+
+                        " battery="+statusKits.get(i).getBattery()+
+                        " temperature="+statusKits.get(i).getTemperature());
+                break;
+            }
+        }
+    }
+
+    private void modeCode(Pojo pojo) {
+        String mode = "";
+        String[] parts = pojo.getMessage().split("=");
+        if(parts.length==2){
+            mode= parts[1];
+        }
+        String ipAddr= pojo.getIpAddress();
+        for (int i=0; i<statusKits.size(); i++) {
+            if(statusKits.get(i).getIpAddress().equals(ipAddr)){
+                statusKits.get(i).setMode(mode);
+                LogManagement.Log_d(TAG, "stateCode statusKits::"+
+                        " adrr="+statusKits.get(i).getIpAddress()+
+                        " state="+statusKits.get(i).getState()+
+                        " mode="+statusKits.get(i).getMode()+
                         " signal="+statusKits.get(i).getRssi()+
                         " battery="+statusKits.get(i).getBattery()+
                         " temperature="+statusKits.get(i).getTemperature());
@@ -1182,6 +1277,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 LogManagement.Log_d(TAG, "stateCode statusKits::"+
                         " adrr="+statusKits.get(i).getIpAddress()+
                         " state="+statusKits.get(i).getState()+
+                        " mode="+statusKits.get(i).getMode()+
                         " signal="+statusKits.get(i).getRssi()+
                         " battery="+statusKits.get(i).getBattery()+
                         " temperature="+statusKits.get(i).getTemperature());
@@ -1203,6 +1299,7 @@ public class FullscreenActivity extends AppCompatActivity {
                 LogManagement.Log_d(TAG, "stateCode statusKits::"+
                         " adrr="+statusKits.get(i).getIpAddress()+
                         " state="+statusKits.get(i).getState()+
+                        " mode="+statusKits.get(i).getMode()+
                         " signal="+statusKits.get(i).getRssi()+
                         " battery="+statusKits.get(i).getBattery()+
                         " temperature="+statusKits.get(i).getTemperature());
@@ -1225,6 +1322,7 @@ public class FullscreenActivity extends AppCompatActivity {
                     LogManagement.Log_d(TAG, "rssiCode statusKits::"+
                             " adrr="+statusKits.get(i).getIpAddress()+
                             " state="+statusKits.get(i).getState()+
+                            " mode="+statusKits.get(i).getMode()+
                             " signal="+statusKits.get(i).getRssi()+
                             " battery="+statusKits.get(i).getBattery()+
                             " temperature="+statusKits.get(i).getTemperature());
@@ -1368,60 +1466,73 @@ public class FullscreenActivity extends AppCompatActivity {
                 String state="";
                 String battery="%";
                 String temperature="℃";
+                String mode="mode";
                 for (int i=0; i<statusKits.size(); i++) {
                     String ipAddr= statusKits.get(i).getIpAddress();
                     strength= statusKits.get(i).getRssi()+"dBm";
                     state=statusKits.get(i).getState();
                     battery=statusKits.get(i).getBattery()+"%";
                     temperature=statusKits.get(i).getTemperature();
+                    mode=statusKits.get(i).getMode();
                     if(ipAddr.equals("192.168.1.10") && ipAddr.equals(k)){
                         kit="kit:1";
                         binding.restartKitButton.setTag("1");
+                        binding.modeKitButton.setTag("1");
                         break;
                     }else if(ipAddr.equals("192.168.1.11") && ipAddr.equals(k)) {
                         kit = "kit:2";
                         binding.restartKitButton.setTag("2");
+                        binding.modeKitButton.setTag("2");
                         break;
                     }else if(ipAddr.equals("192.168.1.12") && ipAddr.equals(k)) {
                         kit = "kit:3";
                         binding.restartKitButton.setTag("3");
+                        binding.modeKitButton.setTag("3");
                         break;
                     }else if(ipAddr.equals("192.168.1.13") && ipAddr.equals(k)) {
                         kit = "kit:4";
                         binding.restartKitButton.setTag("4");
+                        binding.modeKitButton.setTag("4");
                         break;
                     }else if(ipAddr.equals("192.168.1.14") && ipAddr.equals(k)) {
                         kit = "kit:5";
                         binding.restartKitButton.setTag("5");
+                        binding.modeKitButton.setTag("5");
                         break;
                     }else if(ipAddr.equals("192.168.1.15") && ipAddr.equals(k)) {
                         kit = "kit:6";
                         binding.restartKitButton.setTag("6");
+                        binding.modeKitButton.setTag("6");
                         break;
                     }else if(ipAddr.equals("192.168.1.16") && ipAddr.equals(k)) {
                         kit = "kit:7";
                         binding.restartKitButton.setTag("7");
+                        binding.modeKitButton.setTag("7");
                         break;
                     }else if(ipAddr.equals("192.168.1.17") && ipAddr.equals(k)) {
                         kit = "kit:8";
                         binding.restartKitButton.setTag("8");
+                        binding.modeKitButton.setTag("8");
                         break;
                     }else if(ipAddr.equals("192.168.1.18") && ipAddr.equals(k)) {
                         kit = "kit:9";
                         binding.restartKitButton.setTag("9");
+                        binding.modeKitButton.setTag("9");
                         break;
                     }else if(ipAddr.equals("192.168.1.19") && ipAddr.equals(k)) {
                         kit = "kit:10";
                         binding.restartKitButton.setTag("10");
+                        binding.modeKitButton.setTag("10");
                         break;
                     }else{
                         binding.restartKitButton.setTag("0");
+                        binding.modeKitButton.setTag("0");
                     }
 
                 }
                 mKitVisible=false;
                 LogManagement.Log_d(TAG, "showStatus kit ="+kit+" state="+state+" strength="+strength);
-                toggleContent(kit, state,strength , battery, temperature);
+                toggleContent(kit, state,strength , battery, temperature,mode);
             }
         }, 500);
 

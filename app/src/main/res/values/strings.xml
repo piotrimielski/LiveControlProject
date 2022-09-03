@@ -18,5 +18,7 @@
     <string name="state_content">state</string>
     <string name="strength_content">strength</string>
     <string name="kit_content">kit</string>
+    <string name="mode_kit_button">mode</string>
+    <string name="mode_button">mode all kits</string>
 
 </resources>

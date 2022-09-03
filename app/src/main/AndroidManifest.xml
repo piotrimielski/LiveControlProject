@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.givevision.livecontrolproject"
-    android:versionCode="102"
-    android:versionName="102">
+    android:versionCode="103"
+    android:versionName="103">
 
     <!--
         100- graphic represantation of phone stats
@@ -11,6 +11,7 @@
     <!--
         101- state of kit (camera,video), rssi, battery and temperature
         102- restart player on the kit
+        103- set mode on the kit
     -->
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />

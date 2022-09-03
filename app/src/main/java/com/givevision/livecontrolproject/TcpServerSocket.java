@@ -155,6 +155,29 @@ public class TcpServerSocket {
         }
     }
 
+    public void modeKit(String ipAddress) {
+        LogManagement.Log_d(TAG, "modeKit kit= "+ipAddress+" sockets.size="+sockets.size());
+        for(int i=0; i<sockets.size();i++){
+            LogManagement.Log_d(TAG, "modeKit socket InetAddress= "+sockets.get(i).getInetAddress());
+            if(sockets.get(i).getInetAddress().toString().contains(ipAddress)){
+                Socket s=sockets.get(i);
+                Thread thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try  {
+                            DataHandler dataHandler = new DataHandler();
+                            dataHandler.modeKit(s);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                thread.start();
+                break;
+            }
+        }
+    }
+
     class ServerThread implements Runnable {
         public void run() {
             socket = null;
@@ -318,6 +341,11 @@ public class TcpServerSocket {
         public void resetKit(Socket s) {
             Sender sender = new Sender(s);
             sender.sendMessage(Constants.ACTION_RESET);
+        }
+
+        public void modeKit(Socket s) {
+            Sender sender = new Sender(s);
+            sender.sendMessage(Constants.ACTION_SWITCH_MODE);
         }
     }
 
